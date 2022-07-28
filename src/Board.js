@@ -79,11 +79,26 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+      // return (conflictCount > 1);
+
+      // 2. we check if the index of value 1 equals to the last index of value 1
+      // indexOf, lastIndexOf
+      // return (array.indexOf(1) !== array.lastIndexOf(1)) <-- conflict
+      // return (!(array.indexOf(1) === array.lastIndexOf(1))) <-- conflict
+      // return false; // fixme
+      let rowArr = this.get(rowIndex);
+
+      return (rowArr.indexOf(1) === rowArr.lastIndexOf(1)) ? false : true;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
+      let rowLength = this.rows().length;
+      for (let index = 0; index < rowLength; index++) {
+        if (this.hasRowConflictAt(index)) {
+          return true;
+        }
+      }
       return false; // fixme
     },
 
@@ -94,12 +109,34 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      // turn board into an array (currently an object)
+      // to use double array strategy
+      let allRows = this.rows();
+      // let boardArray = [];
+      // for (var i = 0; i < allRows.length; i++) {
+      //   var currentRow = allRows[i];
+      //   boardArray.push(currentRow);
+      // }
+      let boardArray = this.turnBoardIntoBoardArray();
+
+      let counter = 0;
+      for (let row in allRows) {
+        if (boardArray[row][colIndex] === 1) {
+          counter++;
+        }
+      }
+      return (counter > 1) ? true : false;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      let rowLength = this.rows().length;
+      for (let index = 0; index < rowLength; index++) {
+        if (this.hasColConflictAt(index)) {
+          return true;
+        }
+      }
+      return false;
     },
 
 
@@ -108,12 +145,42 @@
     // --------------------------------------------------------------
     //
     // test if a specific major diagonal on this board contains a conflict
+    // boardArray[0][column index]
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      let allRows = this.rows();
+      let boardArray = this.turnBoardIntoBoardArray();
+      let counter = 0;
+      let row = 0;
+      let col = majorDiagonalColumnIndexAtFirstRow;
+      // for (let row in allRows) {
+      // _isInBounds: function(rowIndex, colIndex) {
+      //   return (
+      //     0 <= rowIndex && rowIndex < this.get('n') &&
+      //     0 <= colIndex && colIndex < this.get('n')
+      //   );
+      // },
+      for (let index = 0; index < allRows.length; index++) {
+        if (this._isInBounds(row, col)) {
+          if (boardArray[row][col] === 1) {
+            counter++;
+            row++;
+            col++;
+          }
+        }
+      }
+      return (counter > 1) ? true : false;
+      // return false; // fixme
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
+      // let rowLength = this.rows().length;
+      // for (let index = 0; index < rowLength; index++) {
+      //   if (this.hasMajorDiagonalConflictAt(index)) {
+      //     return true;
+      //   }
+      // }
+      // return false;
       return false; // fixme
     },
 
@@ -130,11 +197,20 @@
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
       return false; // fixme
-    }
+    },
 
     /*--------------------  End of Helper Functions  ---------------------*/
 
 
+    turnBoardIntoBoardArray: function() {
+      let allRows = this.rows();
+      let boardArray = [];
+      for (var i = 0; i < allRows.length; i++) {
+        var currentRow = allRows[i];
+        boardArray.push(currentRow);
+      }
+      return boardArray;
+    }
   });
 
   var makeEmptyMatrix = function(n) {
